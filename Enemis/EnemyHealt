@@ -2,3 +2,11 @@
 public bool isBoss = false;
 //А в любом эффекте:
 if (enemy.isBoss) return;
+//Добавить
+public static System.Action OnAnyEnemyKilled;
+
+void Die()
+{
+    OnAnyEnemyKilled?.Invoke();
+    // остальное
+}
