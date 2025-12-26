@@ -6,6 +6,8 @@ public class RuneInventory : MonoBehaviour
     [Header("Slots")]
     public int slotCount = 3;
 
+    [Header("Owned Runes")] public List<RuneData> ownedRunes = new(); 
+
     // Вставленные руны (перманентно)
     public List<RuneData> equippedRunes = new();
 
@@ -93,6 +95,8 @@ public class RuneInventory : MonoBehaviour
                 }
             }
         }
+
+        public void AddRune(RuneData rune) { if (rune == null) return; ownedRunes.Add(rune); } 
 
         // Применение:
         // 1) в PlayerUpgrades — как отдельный слой рун
