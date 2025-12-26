@@ -25,3 +25,34 @@ public void SetEquipmentMaxHealthBonus(float add)
 }
 
 Если у тебя PlayerStats устроен иначе — скажешь, подгоню под твой файл.
+
+PlayerStats
+
+Добавь бонусы по аналогии со шмотом:
+
+float runeMaxHealthBonus;
+
+public void SetRuneMaxHealthBonus(float add)
+{
+    runeMaxHealthBonus = add;
+    RecalcMaxHealth();
+}
+
+И чтобы не было 3 разных пересчёта — сделай один метод:
+
+float equipmentMaxHealthBonus;
+
+public void SetEquipmentMaxHealthBonus(float add)
+{
+    equipmentMaxHealthBonus = add;
+    RecalcMaxHealth();
+}
+
+void RecalcMaxHealth()
+{
+    int newMax = Mathf.RoundToInt(baseMaxHealth + equipmentMaxHealthBonus + runeMaxHealthBonus);
+
+    float pct = (maxHealth > 0) ? (currentHealth / (float)maxHealth) : 1f;
+    maxHealth = newMax;
+    currentHealth = Mathf.Clamp(Mathf.RoundToInt(maxHealth * pct), 1, maxHealth);
+}
