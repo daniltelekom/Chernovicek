@@ -32,15 +32,30 @@ public class RuneInventory : MonoBehaviour
         while (equippedRunes.Count > slotCount) equippedRunes.RemoveAt(equippedRunes.Count - 1);
     }
 
-    public bool EquipRune(int slotIndex, RuneData rune)
-    {
-        EnsureSize();
-        if (slotIndex < 0 || slotIndex >= slotCount) return false;
+   public bool EquipRune(int slotIndex, RuneData rune)
+{
+    EnsureSize();
+    if (slotIndex < 0 || slotIndex >= slotCount) return false;
 
-        equippedRunes[slotIndex] = rune;
-        RecalculateAndApply();
-        return true;
+    // если руна уже стоит в другом слоте — убираем оттуда (перенос)
+    if (rune != null)
+    {
+        for (int i = 0; i < equippedRunes.Count; i++)
+        {
+            if (i == slotIndex) continue;
+            if (equippedRunes[i] == rune)
+            {
+                equippedRunes[i] = null;
+                break;
+            }
+        }
     }
+
+    equippedRunes[slotIndex] = rune;
+    RecalculateAndApply();
+    return true;
+}
+
 
     public void UnequipRune(int slotIndex)
     {
