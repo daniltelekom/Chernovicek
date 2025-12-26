@@ -1,0 +1,27 @@
+Добавь в PlayerStats метод (или сделай заглушку, если пока нет maxHP):
+
+public int baseMaxHealth = 100;
+public int maxHealth;
+public int currentHealth;
+
+float equipmentMaxHealthBonus;
+
+void Awake()
+{
+    maxHealth = baseMaxHealth;
+    currentHealth = maxHealth;
+}
+
+public void SetEquipmentMaxHealthBonus(float add)
+{
+    equipmentMaxHealthBonus = add;
+    int newMax = Mathf.RoundToInt(baseMaxHealth + equipmentMaxHealthBonus);
+
+    // чтобы не было “обрезало хп” — оставляем процент
+    float pct = (maxHealth > 0) ? (currentHealth / (float)maxHealth) : 1f;
+
+    maxHealth = newMax;
+    currentHealth = Mathf.Clamp(Mathf.RoundToInt(maxHealth * pct), 1, maxHealth);
+}
+
+Если у тебя PlayerStats устроен иначе — скажешь, подгоню под твой файл.
