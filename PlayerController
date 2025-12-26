@@ -13,3 +13,14 @@ public float equipmentMoveSpeedBonus = 0f;
 
 float speed = moveSpeed + equipmentMoveSpeedBonus;
 rb.MovePosition(rb.position + move * speed * Time.fixedDeltaTime);
+
+
+PlayerController
+
+Добавь поле:
+
+public float runeMoveSpeedBonus = 0f;
+
+И скорость считай так:
+
+float speed = moveSpeed + equipmentMoveSpeedBonus + runeMoveSpeedBonus;
