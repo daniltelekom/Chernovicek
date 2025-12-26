@@ -1,0 +1,4 @@
+//Добавить сверху 
+public bool isBoss = false;
+//А в любом эффекте:
+if (enemy.isBoss) return;
