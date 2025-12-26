@@ -1,8 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class ChestUIManager : MonoBehaviour
 {
+    [Header("UI")]
     public GameObject panel;
+
+    public Transform runItemsContent;
+    public GameObject runItemButtonPrefab;
+
+    public TMP_Text chestInfoText;
 
     RunInventory runInv;
     ChestStash chest;
@@ -23,26 +31,41 @@ public class ChestUIManager : MonoBehaviour
         if (meta == null) meta = player.gameObject.AddComponent<MetaInventory>();
 
         panel.SetActive(true);
-
-        Debug.Log("Chest opened");
-        Debug.Log($"Run items: {runInv.foundItems.Count}");
+        Refresh();
     }
 
-    // ВРЕМЕННАЯ КНОПКА — кладёт ПЕРВЫЙ предмет
-    public void DepositFirstItem()
+    void Refresh()
     {
-        if (runInv.foundItems.Count == 0) return;
+        // очистка списка
+        foreach (Transform c in runItemsContent)
+            Destroy(c.gameObject);
 
-        var item = runInv.foundItems[0];
+        // кнопки предметов
+        foreach (var item in runInv.foundItems)
+        {
+            var go = Instantiate(runItemButtonPrefab, runItemsContent);
+            var txt = go.GetComponentInChildren<TMP_Text>();
+            txt.text = $"{item.itemName} [{item.slot}]";
+
+            var btn = go.GetComponent<Button>();
+            btn.onClick.AddListener(() => Deposit(item));
+        }
+
+        chestInfoText.text = $"Chest: {chest.storedItems.Count}/{chest.maxSlots}";
+    }
+
+    void Deposit(ItemData item)
+    {
+        if (chest.IsFull)
+        {
+            Debug.Log("Chest is full");
+            return;
+        }
 
         if (chest.TryAdd(item))
         {
             runInv.Remove(item);
-            Debug.Log($"Deposited to chest: {item.itemName}");
-        }
-        else
-        {
-            Debug.Log("Chest full!");
+            Refresh();
         }
     }
 
@@ -51,12 +74,10 @@ public class ChestUIManager : MonoBehaviour
         foreach (var item in chest.storedItems)
             meta.Add(item);
 
-        // чистим ран
         runInv.ClearRun();
         chest.Clear();
 
         panel.SetActive(false);
-
-        Debug.Log("Run ended. Chest items saved.");
+        Debug.Log("Run ended, items saved");
     }
 }
