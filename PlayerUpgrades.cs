@@ -38,6 +38,41 @@ public class PlayerUpgrades : MonoBehaviour
 
     // Твои tag-мультипликаторы (если есть) остаются как были.
     // Их можно умножать поверх combined, как ты уже делаешь.
+
+
+
+
+    PlayerUpgrades — добавляем слой “Runes”
+
+Открой PlayerUpgrades.cs и добавь:
+
+// ===== RUNES layer =====
+public float runeDamageMult = 1f;
+public float runeCooldownMult = 1f;
+public float runeProjectileSpeedMult = 1f;
+public float runeRadiusAdd = 0f;
+
+public void SetRuneTotals(float dmgMult, float cdMult, float projMult, float radiusAdd)
+{
+    runeDamageMult = dmgMult;
+    runeCooldownMult = Mathf.Max(0.2f, cdMult);
+    runeProjectileSpeedMult = projMult;
+    runeRadiusAdd = radiusAdd;
+}
+
+И обнови combined свойства (если ты их делал в прошлый раз):
+
+было: run * eq
+
+стало: run * eq * rune
+
+
+Пример:
+
+public float damageMult => runDamageMult * eqDamageMult * runeDamageMult;
+public float cooldownMult => runCooldownMult * eqCooldownMult * runeCooldownMult;
+public float projectileSpeedMult => runProjectileSpeedMult * eqProjectileSpeedMult * runeProjectileSpeedMult;
+public float radiusAdd => runRadiusAdd + eqRadiusAdd + runeRadiusAdd;
 }
 
 Если у тебя уже есть PlayerUpgrades с tag-словарями — не удаляй их. Просто добавь “equipment layer” и combined свойства.
