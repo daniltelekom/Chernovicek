@@ -11,6 +11,9 @@ public class MiniBossController : MonoBehaviour
     public float dashCooldown = 10f;
     public float dashForce = 16f;
 
+    public GameObject slamVfxPrefab;
+    public float slamDelay = 0.6f;
+
     float slamTimer;
     float dashTimer;
 
@@ -48,35 +51,67 @@ public class MiniBossController : MonoBehaviour
         }
     }
 
-    void Slam()
+  void Slam()
+{
+    if (slamVfxPrefab != null)
     {
-        // визуал потом, сейчас логика
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            slamRadius,
-            LayerMask.GetMask("Player")
+        var vfx = Instantiate(
+            slamVfxPrefab,
+            new Vector3(transform.position.x, 0.01f, transform.position.z),
+            Quaternion.identity
         );
 
-        foreach (var h in hits)
-        {
-            var p = h.GetComponent<PlayerStats>();
-            if (p != null)
-                p.TakeDamage(slamDamage);
-        }
-
-        Debug.Log("MiniBoss Slam");
+        var ctrl = vfx.GetComponent<SlamVFX>();
+        if (ctrl != null)
+            ctrl.SetRadius(slamRadius);
     }
+
+    Invoke(nameof(DoSlamDamage), slamDelay);
+}
+
+void DoSlamDamage()
+{
+    Collider[] hits = Physics.OverlapSphere(
+        transform.position,
+        slamRadius,
+        LayerMask.GetMask("Player")
+    );
+
+    foreach (var h in hits)
+    {
+        var p = h.GetComponent<PlayerStats>();
+        if (p != null)
+            p.TakeDamage(slamDamage);
+    }
+
+    Debug.Log("MiniBoss Slam HIT");
+}
 
     void Dash()
-    {
-        if (rb == null) return;
+{
+    if (rb == null || player == null) return;
 
-        Vector3 dir = (player.position - transform.position);
-        dir.y = 0f;
+    StartCoroutine(DashRoutine());
+}
 
-        rb.AddForce(dir.normalized * dashForce, ForceMode.Impulse);
-        Debug.Log("MiniBoss Dash");
-    }
+System.Collections.IEnumerator DashRoutine()
+{
+    // телеграф — лёгкое сжатие
+    Vector3 originalScale = transform.localScale;
+    transform.localScale = originalScale * 0.9f;
+
+    yield return new WaitForSeconds(0.4f);
+
+    transform.localScale = originalScale;
+
+    Vector3 dir = (player.position - transform.position);
+    dir.y = 0f;
+
+    rb.AddForce(dir.normalized * dashForce, ForceMode.Impulse);
+
+    Debug.Log("MiniBoss Dash");
+}
+
 
     void OnDrawGizmosSelected()
     {
