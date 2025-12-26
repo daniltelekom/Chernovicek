@@ -1,0 +1,15 @@
+В PlayerController добавь поле:
+
+public float equipmentMoveSpeedBonus = 0f;
+
+И в месте, где считаешь скорость движения, используй:
+
+было: moveSpeed
+
+стало: moveSpeed + equipmentMoveSpeedBonus
+
+
+Например:
+
+float speed = moveSpeed + equipmentMoveSpeedBonus;
+rb.MovePosition(rb.position + move * speed * Time.fixedDeltaTime);
