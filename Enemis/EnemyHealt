@@ -10,3 +10,19 @@ void Die()
     OnAnyEnemyKilled?.Invoke();
     // остальное
 }
+
+В EnemyHealth.Die() (или где у тебя смерть):
+
+Добавь поля в EnemyHealth:
+
+public GameObject lootPrefab;
+public ItemData debugDropItem; // для теста
+
+В Die() добавь:
+
+if (lootPrefab != null && debugDropItem != null)
+{
+    var loot = Instantiate(lootPrefab, transform.position, Quaternion.identity);
+    var pick = loot.GetComponent<LootPickup>();
+    if (pick != null) pick.item = debugDropItem;
+}
